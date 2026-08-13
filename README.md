@@ -1,37 +1,38 @@
-# 🎓 AI Study Assistant
+# 🎓 AI Study Assistant & Quiz Platform
 
-A beginner-friendly web application that uses **Google's Gemini API** to help students study any topic — instantly generating a simple explanation, key points, a 5-question quiz, and answers.
+An AI-powered web application that turns any topic into a personalized, adaptive quiz — built with **Python Flask** and **Google's Gemini API**. Students enter a topic, choose their quiz settings, and get an instant explanation, key points, an interactive quiz with a timer and progress tracking, a full score dashboard, AI-generated explanations, and weak-topic study recommendations.
 
 ---
 
 ## 📄 Abstract
 
-AI Study Assistant is a lightweight web application designed to help students revise topics quickly using generative AI. A student types in any topic or question, and the app calls Google's Gemini API to generate a simplified explanation, a list of key points, a 5-question multiple-choice quiz, and the correct answers — all displayed in a clean, card-based interface. The project demonstrates how a Python Flask backend can securely integrate a third-party AI API and serve structured, AI-generated educational content to a simple HTML/CSS/JavaScript frontend.
+AI Study Assistant is a web application that helps students revise and self-test on any topic using generative AI. A student enters a topic, selects a difficulty, question count, question type, and optional timer, and the app calls Google's Gemini API to generate a simplified explanation, key points, and a structured quiz. The student takes the quiz question-by-question with a live progress bar and optional countdown timer, then receives a detailed score dashboard with per-question explanations and an AI-generated analysis of their weak topics with study recommendations. The project demonstrates a full AI-integrated web application: prompt engineering for structured JSON output, stateful frontend quiz logic, and browser-based persistence — all without requiring a database.
 
 ---
 
 ## 🎯 Objectives
 
-- Build a working web application that integrates a real-world AI API.
-- Help students quickly understand and revise any topic.
-- Demonstrate frontend-backend communication using Flask and JavaScript `fetch()`.
+- Build a working, AI-powered personalized quiz platform from an existing AI integration.
+- Demonstrate structured prompt engineering (forcing reliable JSON output from an LLM).
 - Practice secure API key handling using environment variables.
-- Generate structured, exam-ready study material (explanation, key points, quiz, answers).
+- Implement client-side state management for a multi-screen quiz flow (setup → study → quiz → results).
+- Use AI not just to generate content, but to *analyze* a student's performance and recommend next steps.
 
 ---
 
 ## ✨ Features
 
-- Enter **any topic or question** in plain text.
-- AI-generated **simple explanation** (beginner-friendly language).
-- **5 key points** for quick revision.
-- **5 multiple-choice quiz questions** to self-test.
-- **Answer key** hidden behind a "Reveal Answers" button.
-- Clean, modern, card-based UI.
-- Fully **responsive** — works on desktop and mobile.
-- Friendly **error handling** (empty input, API failure, network issues).
-- Loading indicator while AI generates content.
-- Repeatable — generate material for as many topics as you like, one after another.
+- **Personalized quiz setup** — topic (with clickable topic suggestions), difficulty (Easy/Medium/Hard/Mixed), number of questions (5/10/15/20), question type (Multiple Choice / True-False / Mixed), and an optional timer (5/10/15 min or none).
+- **AI-generated study material** — a beginner-friendly explanation and 5 key points before the quiz starts.
+- **Question-by-question quiz screen** — live progress bar (`Question 4 of 10`), Previous / Next / Skip / Submit navigation.
+- **Countdown timer with auto-submit** — if you run out of time, the quiz submits itself and scores whatever was answered.
+- **Full score dashboard** — score, correct/incorrect counts, accuracy %, and time taken.
+- **Per-question review** — your answer vs. the correct answer, clearly marked ✅/❌, with an AI-written explanation for every question.
+- **AI weak-topic analysis** — after submitting, a second AI call analyzes your incorrect answers' sub-topics and gives a short, encouraging study recommendation.
+- **Regenerate question** — don't like a question? Swap it out for a fresh AI-generated one without losing quiz progress.
+- **Quiz history** — every completed quiz (topic, difficulty, score, accuracy, date) is saved locally in the browser via `localStorage` — no database required.
+- **Robust error handling** — empty input, invalid AI output, missing API key, timeouts, rate limits/quota errors, and network failures are all caught and shown as friendly messages instead of crashing the app.
+- Clean, card-based, fully **responsive** UI (desktop, tablet, mobile).
 
 ---
 
@@ -39,9 +40,10 @@ AI Study Assistant is a lightweight web application designed to help students re
 
 | Layer      | Technology |
 |------------|------------|
-| Frontend   | HTML5, CSS3, Vanilla JavaScript |
+| Frontend   | HTML5, CSS3, Vanilla JavaScript (no frameworks) |
 | Backend    | Python, Flask |
 | AI API     | Google Gemini API (`google-genai` SDK) |
+| Persistence| Browser `localStorage` (quiz history) — no database |
 | Config     | `python-dotenv` (`.env` file) |
 
 ---
@@ -51,16 +53,16 @@ AI Study Assistant is a lightweight web application designed to help students re
 ```
 AI-Study-Assistant/
 │
-├── app.py                 # Flask backend + Gemini API integration
+├── app.py                  # Flask backend + Gemini API integration (3 routes)
 ├── requirements.txt        # Python dependencies
-├── .env                     # Stores GEMINI_API_KEY (not committed to GitHub)
+├── .env                     # Stores GEMINI_API_KEY (never committed)
 ├── .gitignore
 ├── README.md
 ├── templates/
-│   └── index.html          # Main webpage
+│   └── index.html          # Setup panel, study card, quiz screen, results dashboard
 └── static/
-    ├── style.css            # Styling
-    └── script.js            # Frontend logic (fetch calls, DOM updates)
+    ├── style.css            # All styling (setup panel, quiz UI, dashboard, history table)
+    └── script.js            # Frontend state machine: setup -> study -> quiz -> results
 ```
 
 ---
@@ -69,13 +71,11 @@ AI-Study-Assistant/
 
 ### 1. Install Python requirements
 
-Make sure you have **Python 3.9+** installed. Then, inside the project folder, run:
+Requires **Python 3.9+**.
 
 ```bash
 pip install -r requirements.txt
 ```
-
-This installs Flask (the web server), `python-dotenv` (to read the `.env` file), and `google-genai` (the official Gemini API SDK).
 
 *(Optional but recommended)* Use a virtual environment first:
 
@@ -86,154 +86,139 @@ source venv/bin/activate   # macOS/Linux
 pip install -r requirements.txt
 ```
 
-### 2. Create and configure your Gemini API key
+### 2. Get a Gemini API key
 
 1. Go to **[Google AI Studio](https://aistudio.google.com/apikey)**.
-2. Sign in with your Google account.
-3. Click **"Create API Key"** and copy the generated key.
+2. Sign in and click **"Create API Key"**.
 
-### 3. Create the `.env` file
+### 3. Create your `.env` file
 
-In the root of the project, create a file named exactly `.env` (already included as a template) and paste your key:
+In the project root, create a file named `.env`:
 
 ```
 GEMINI_API_KEY=your_actual_api_key_here
 GEMINI_MODEL=gemini-2.5-flash
 ```
 
-⚠️ Never share this file or commit it to GitHub — it's already listed in `.gitignore`.
+⚠️ Never share this file or commit it — it's already listed in `.gitignore`.
 
-### 4. Run the Flask application
+### 4. Run the app
 
 ```bash
 python app.py
 ```
 
-You should see output like:
-
-```
- * Running on http://127.0.0.1:5000
-```
-
-### 5. Open it in the browser
-
-Open your browser and go to:
-
-```
-http://127.0.0.1:5000
-```
-
-Type a topic (e.g. "Photosynthesis" or "What is a linked list?") and click **Generate Study Material**.
+Then open **http://127.0.0.1:5000** in your browser.
 
 ---
 
 ## 🔍 How It Works
 
-### 6. Frontend ↔ Flask backend communication
+### Application flow
 
-- `templates/index.html` renders the page and loads `static/script.js`.
-- When the user clicks **Generate Study Material**, `script.js` calls:
-  ```js
-  fetch("/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ topic })
-  })
-  ```
-- This sends the topic as JSON to the Flask route `/generate`.
-- Flask processes it and sends back a JSON response, which JavaScript reads and injects into the page's HTML — no page reload needed.
+1. **Setup** — student enters a topic (or clicks a suggestion chip) and picks difficulty/count/type/timer, then clicks **Generate Quiz**.
+2. **Study Card** — the AI-generated explanation and key points display; clicking **Start Quiz** begins the quiz.
+3. **Quiz Screen** — one question at a time, with a progress bar and (if selected) a live countdown timer. Students can go Previous/Next/Skip, or regenerate a question they don't like.
+4. **Submit** — either manually or automatically (timer expiry). The frontend scores the quiz against each question's `correct_answer`.
+5. **Results Dashboard** — score summary, then a full per-question review with explanations, followed by an AI-generated weak-topic analysis and study recommendation.
+6. **History** — the completed quiz is saved to `localStorage` and shown in the Quiz History table.
 
-### 7. Flask backend ↔ Gemini API communication
+### Backend routes (`app.py`)
 
-- `app.py` loads the `GEMINI_API_KEY` from `.env` using `python-dotenv`.
-- It creates a Gemini client: `genai.Client(api_key=GEMINI_API_KEY)`.
-- For each request, it builds a detailed prompt (see `build_prompt()` in `app.py`) that instructs Gemini to return **only JSON** with `explanation`, `key_points`, `quiz`, and `answers`.
-- It calls `client.models.generate_content(model=..., contents=prompt, config=...)` with `response_mime_type="application/json"` to encourage a clean JSON reply.
-- The JSON text is parsed with `json.loads()` and validated before being sent back to the frontend.
+| Route | Purpose |
+|---|---|
+| `POST /generate` | Builds a difficulty/count/type-aware prompt, calls Gemini, returns `explanation`, `key_points`, and a `quiz` array where each question carries its own `type`, `options`, `correct_answer`, `explanation`, and `topic_tag`. |
+| `POST /regenerate-question` | Generates one replacement question, avoiding repeats of the existing quiz. |
+| `POST /analyze` | Takes the student's incorrect answers' sub-topics and returns `weak_areas` + a `recommendation`. |
 
-### 8. How the AI response is displayed
+All three routes validate their inputs server-side, request JSON output from Gemini (`response_mime_type="application/json"`), strip any accidental markdown fences, and catch quota/timeout/network/malformed-JSON errors with specific, friendly messages instead of crashing.
 
-- `script.js` receives the JSON (`explanation`, `key_points`, `quiz`, `answers`).
-- It dynamically creates HTML elements (paragraphs, list items, quiz option lists) and inserts them into the four cards: **📚 Explanation**, **📝 Key Points**, **🧠 Quiz**, **✅ Answers**.
-- Answers stay hidden until the student clicks **Reveal Answers**, encouraging self-testing first.
+### Why no database?
 
-### 9. Uploading to GitHub
+Quiz history only needs to persist per-browser, and the data (topic, score, accuracy, date) is simple and small. `localStorage` avoids the extra complexity of SQLAlchemy/SQLite setup for what's fundamentally a lightweight academic project — but see *Future Improvements* below for how this could be upgraded.
+
+---
+
+## 📤 Uploading to GitHub
 
 ```bash
 cd AI-Study-Assistant
 git init
 git add .
-git commit -m "Initial commit: AI Study Assistant"
+git commit -m "Initial commit: AI Study Assistant & Quiz Platform"
 git branch -M main
 git remote add origin https://github.com/<your-username>/AI-Study-Assistant.git
 git push -u origin main
 ```
 
-✅ Because `.env` is listed in `.gitignore`, your API key will **not** be uploaded to GitHub. Double-check with `git status` before your first commit that `.env` is not staged.
+Before your first commit, run `git status` and confirm `.env` is **not** in the list of staged files.
+
+### ⚠️ Never upload these to GitHub:
+- `.env` (contains your real `GEMINI_API_KEY`)
+- Any file containing an actual API key, hardcoded or otherwise
+- `venv/` or `__pycache__/` (already in `.gitignore`)
+- Any personal data exported from testing (not applicable here, since history is client-side only)
 
 ---
 
 ## 🔮 Future Improvements
 
-- Save quiz history / scores using a lightweight database (e.g. SQLite).
-- Add difficulty levels (Beginner / Intermediate / Advanced).
-- Support file/PDF upload so the AI can generate material from notes.
-- Add a "download as PDF" option for offline revision.
-- Add user accounts to track study progress over time.
+- Move quiz history from `localStorage` to a proper SQLite database with a `sqlite3`/`Flask-SQLAlchemy` backend, enabling cross-device history and user accounts.
+- Add Fill-in-the-Blank as a third question type (currently Multiple Choice + True/False).
+- Support PDF/notes upload so the AI generates quizzes from a student's own material.
+- Add a "download results as PDF" option.
+- Add user authentication so history is tied to an account rather than a browser.
 - Support multiple languages.
 
 ---
 
 ## ✅ Advantages
 
-- Saves time creating revision material manually.
-- Simple, beginner-friendly tech stack (no database, no complex frameworks).
-- Works for any subject or topic instantly.
-- Encourages active recall through self-testing (quiz + hidden answers).
-- Easy to extend and customize.
-
----
+- Fully personalized quizzes — difficulty, length, and type are all student-controlled.
+- No database required, so setup stays simple for an academic project.
+- Encourages active recall and self-correction via immediate, explained feedback.
+- The weak-topic analysis turns a static quiz into an actual study *tool*, not just a test.
 
 ## ⚠️ Limitations
 
 - Requires an active internet connection and a valid Gemini API key.
 - AI-generated content may occasionally contain inaccuracies — always cross-check important facts.
-- No persistent storage; generated material is not saved between sessions.
-- Free-tier API keys have rate limits, so heavy use may hit quota limits.
+- Quiz history is stored per-browser (`localStorage`), not synced across devices.
+- Free-tier API keys have rate limits; heavy use may hit quota (the app now shows a specific message when this happens).
 
 ---
 
 ## 🎤 Viva Questions & Answers
 
 **1. What does this project do?**
-It takes a topic or question from the user and uses the Gemini AI API to generate a simple explanation, key points, a 5-question quiz, and answers for studying.
+It generates a personalized quiz from any topic using the Gemini AI API — with configurable difficulty, length, and question type — then scores the student, explains every answer, and analyzes their weak topics.
 
-**2. What is Flask, and why did you use it?**
-Flask is a lightweight Python web framework. It was used because it's simple, beginner-friendly, and doesn't require complex setup, making it ideal for a small student project.
+**2. Why did you redesign the JSON schema between versions?**
+Originally, answers lived in a separate object keyed by question number. To support mixed question types, per-question explanations, and topic tagging for weak-area analysis, each question now carries its own `type`, `correct_answer`, `explanation`, and `topic_tag` — a single self-contained object per question.
 
-**3. Why do you store the API key in a `.env` file instead of directly in the code?**
-Storing it in `.env` keeps the secret key out of the source code, so it isn't accidentally exposed or uploaded to GitHub. `python-dotenv` loads it securely at runtime.
+**3. How does the timer's auto-submit work?**
+`setInterval` in `script.js` decrements a `timeRemainingSeconds` counter every second; when it hits zero, it calls the same `submitQuiz()` function the Submit button uses, passing a flag that shows a "time's up" note.
 
-**4. How does the frontend send data to the backend?**
-The JavaScript `fetch()` function sends a POST request with the topic as JSON to the Flask route `/generate`, without reloading the page.
+**4. How does weak-topic analysis work?**
+After scoring, the frontend collects the `topic_tag` and question text of every question answered incorrectly and sends them to the `/analyze` route, which asks Gemini to identify recurring weak sub-topics and generate a study recommendation.
 
-**5. Why did you ask Gemini to return JSON instead of plain text?**
-JSON is structured and predictable, so the JavaScript frontend can reliably extract specific fields (`explanation`, `key_points`, `quiz`, `answers`) and display them in the right sections.
+**5. Why use `localStorage` instead of a database for quiz history?**
+The history data is simple, small, and only needs to persist in the same browser — a full database would add setup complexity (SQLAlchemy models, migrations) without meaningful benefit at this scale.
 
-**6. What happens if the API call fails?**
-The Flask backend catches the error, logs it, and returns a JSON error message. The frontend displays this as a friendly error message to the user instead of crashing.
+**6. How does "Regenerate Question" avoid duplicate questions?**
+The frontend sends the text of all current quiz questions to `/regenerate-question`; the prompt explicitly instructs the AI not to repeat or closely resemble any of them.
 
-**7. What is the purpose of `requirements.txt`?**
-It lists all Python packages the project depends on (Flask, python-dotenv, google-genai), so anyone can install them with one command: `pip install -r requirements.txt`.
+**7. What happens if the Gemini API hits a rate limit?**
+The backend inspects the exception message for quota/rate-limit indicators and returns a specific 429 response with a friendly message, instead of a generic error — the frontend displays this directly to the student.
 
-**8. Is this project using any database?**
-No. The project intentionally avoids a database to keep things simple — study material is generated fresh each time and not stored.
+**8. What happens if the AI returns fewer questions than requested?**
+The backend detects this and adds a `warning` field to the response instead of failing; the frontend shows it as a non-blocking notice.
 
-**9. How is the project responsive on mobile devices?**
-CSS media queries adjust padding, font sizes, and layout spacing for smaller screens, and the layout uses flexible widths (`max-width`, `%`) instead of fixed pixel sizes.
+**9. How is the project responsive on mobile?**
+CSS media queries adjust the settings grid, navigation buttons, history table, and timer layout at `600px` and `480px` breakpoints, using flexible widths instead of fixed pixel sizing.
 
 **10. What AI model does this project use?**
-It uses Google's Gemini API (default model: `gemini-2.5-flash`), accessed through the official `google-genai` Python SDK.
+Google's Gemini API (default: `gemini-2.5-flash`), accessed via the official `google-genai` Python SDK, with `response_mime_type="application/json"` to encourage structured output.
 
 ---
 

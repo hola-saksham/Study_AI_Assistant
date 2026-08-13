@@ -265,3 +265,341 @@ textarea:focus {
     background-color: #fee2e2;
     border-color: #ef4444;
 }
+
+/* ===== Topic Suggestion Chips ===== */
+.topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chip {
+  background: #eef0fc;
+  color: var(--primary);
+  border: 1px solid #dcdffb;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.chip:hover {
+  background: #e0e3fa;
+}
+
+.chip:active {
+  transform: scale(0.97);
+}
+
+/* ===== Quiz Settings Grid ===== */
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.setting-field .input-label {
+  margin-bottom: 6px;
+}
+
+.setting-field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.setting-field select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ===== Responsive: Settings Grid ===== */
+@media (max-width: 600px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===== Start Quiz Button ===== */
+#startQuizBtn {
+  margin-top: 16px;
+  width: 100%;
+  padding: 13px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#startQuizBtn:hover {
+  background: var(--primary-dark);
+}
+
+/* ===== Timer ===== */
+.timer-display {
+  position: sticky;
+  top: 10px;
+  float: right;
+  background: #eef0fc;
+  color: var(--primary);
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+}
+
+.timer-display.timer-urgent {
+  background: #fee2e2;
+  color: var(--error);
+}
+
+/* ===== Progress Bar ===== */
+.progress-wrap {
+  clear: both;
+  margin-bottom: 18px;
+}
+
+.progress-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.progress-bar-outer {
+  width: 100%;
+  height: 10px;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 6px;
+  transition: width 0.25s ease;
+}
+
+/* ===== Active Question (quiz-taking view) ===== */
+.active-question {
+  font-size: 1.05rem;
+  margin-bottom: 14px;
+}
+
+.quiz-option.selected {
+  background-color: #eef0fc;
+  border-color: var(--primary);
+}
+
+/* ===== Quiz Navigation ===== */
+.quiz-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.quiz-nav button {
+  flex: 1;
+  min-width: 100px;
+  padding: 11px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.quiz-nav .secondary-btn {
+  margin-bottom: 0;
+}
+
+.quiz-nav .secondary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#submitQuizBtn {
+  background: var(--success);
+  color: #fff;
+}
+
+#submitQuizBtn:hover {
+  background: #128a3e;
+}
+
+@media (max-width: 600px) {
+  .quiz-nav button {
+    min-width: 45%;
+  }
+}
+
+/* ===== Review List (Step 4) ===== */
+.review-item {
+  border: 1.5px solid var(--border);
+  border-left-width: 5px;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.review-item:last-child {
+  margin-bottom: 0;
+}
+
+.review-item.review-correct {
+  border-left-color: var(--success);
+  background: #f0fdf4;
+}
+
+.review-item.review-incorrect {
+  border-left-color: var(--error);
+  background: #fef2f2;
+}
+
+.review-badge {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin: 4px 0 8px;
+}
+
+.review-item.review-correct .review-badge {
+  color: var(--success);
+}
+
+.review-item.review-incorrect .review-badge {
+  color: var(--error);
+}
+
+.review-line {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.review-explanation {
+  margin: 8px 0 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+/* ===== Weak-Topic Analysis Card (Step 5) ===== */
+#analysisCard #analysisLoader {
+  margin-top: 4px;
+}
+
+#weakAreasList {
+  margin: 0;
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+#recommendationText {
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ===== Regenerate Question Button (Step 6) ===== */
+.regenerate-btn {
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.regenerate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== Quiz History (Step 7) ===== */
+#historyCard {
+  margin-top: 18px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.history-header h2 {
+  margin: 0;
+}
+
+.history-header .secondary-btn {
+  margin-bottom: 0;
+  padding: 7px 12px;
+  font-size: 0.8rem;
+}
+
+.history-empty {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.history-table th,
+.history-table td {
+  text-align: left;
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.history-table th {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.history-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 600px) {
+  .history-table {
+    font-size: 0.78rem;
+  }
+
+  .history-table th,
+  .history-table td {
+    padding: 7px 5px;
+  }
+}
+
+/* ===== Mobile fix: timer stacks instead of floating (Step 8) ===== */
+@media (max-width: 480px) {
+  .timer-display {
+    position: static;
+    float: none;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+}

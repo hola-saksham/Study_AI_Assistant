@@ -12,11 +12,11 @@
     <!-- ===== Header ===== -->
     <header class="header">
       <h1>🎓 AI Study Assistant</h1>
-      <p class="subtitle">Type any topic or question — get an explanation, key points, and a quiz instantly.</p>
+      <p class="subtitle">Set up your quiz, and get an explanation, key points, and questions instantly.</p>
     </header>
 
-    <!-- ===== Input Section ===== -->
-    <section class="input-card">
+    <!-- ===== Setup / Input Section ===== -->
+    <section class="input-card" id="quizSetup">
       <label for="topicInput" class="input-label">Enter a topic or question</label>
       <textarea
         id="topicInput"
@@ -24,7 +24,59 @@
         rows="3"
       ></textarea>
 
-      <button id="generateBtn">Generate Study Material</button>
+      <!-- Topic suggestion chips -->
+      <div class="topic-chips" id="topicChips">
+        <button type="button" class="chip" data-topic="Photosynthesis">Photosynthesis</button>
+        <button type="button" class="chip" data-topic="Newton's Laws of Motion">Newton's Laws of Motion</button>
+        <button type="button" class="chip" data-topic="GK Questions">GK Questions</button>
+        <button type="button" class="chip" data-topic="Artificial Intelligence">Artificial Intelligence</button>
+        <button type="button" class="chip" data-topic="Tourism">Tourism</button>
+        <button type="button" class="chip" data-topic="Respiration">Respiration</button>
+      </div>
+
+      <!-- Quiz settings grid -->
+      <div class="settings-grid">
+        <div class="setting-field">
+          <label for="difficultySelect" class="input-label">Difficulty</label>
+          <select id="difficultySelect">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+            <option value="mixed">Mixed</option>
+          </select>
+        </div>
+
+        <div class="setting-field">
+          <label for="countSelect" class="input-label">Questions</label>
+          <select id="countSelect">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+
+        <div class="setting-field">
+          <label for="typeSelect" class="input-label">Question Type</label>
+          <select id="typeSelect">
+            <option value="multiple_choice" selected>Multiple Choice</option>
+            <option value="true_false">True / False</option>
+            <option value="mixed">Mixed</option>
+          </select>
+        </div>
+
+        <div class="setting-field">
+          <label for="timerSelect" class="input-label">Timer</label>
+          <select id="timerSelect">
+            <option value="0" selected>No timer</option>
+            <option value="5">5 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="15">15 minutes</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="generateBtn">Explore!🚀</button>
 
       <!-- Error message box (hidden by default) -->
       <p id="errorBox" class="error-box hidden"></p>
@@ -32,13 +84,33 @@
       <!-- Loading indicator (hidden by default) -->
       <div id="loader" class="loader hidden">
         <div class="spinner"></div>
-        <span>Generating study material...</span>
+        <span>Exploring...</span>
       </div>
     </section>
 
-    <!-- ===== Results Section ===== -->
-    <section id="results" class="results hidden">
+    <!-- ===== Quiz History (Step 7) ===== -->
+    <section class="card" id="historyCard">
+      <div class="history-header">
+        <h2>📊 Quiz History</h2>
+        <button id="clearHistoryBtn" class="secondary-btn" type="button">Clear History</button>
+      </div>
+      <div id="historyEmpty" class="history-empty">No quizzes taken yet. Complete a quiz to see it here!</div>
+      <table id="historyTable" class="history-table hidden">
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Difficulty</th>
+            <th>Score</th>
+            <th>Accuracy</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </section>
 
+    <!-- ===== Study Card (explanation + key points, shown after generate) ===== -->
+    <section id="studyCard" class="results hidden">
       <div class="card">
         <h2>📚 Explanation</h2>
         <p id="explanationText"></p>
@@ -49,17 +121,62 @@
         <ul id="keyPointsList"></ul>
       </div>
 
+      <button id="startQuizBtn">Start Quiz 🚀</button>
+    </section>
+
+    <!-- ===== Quiz Taking Screen ===== -->
+    <section id="quizTaking" class="card hidden">
+
+      <div id="timerDisplay" class="timer-display hidden">⏱ <span id="timerText">00:00</span></div>
+
+      <div class="progress-wrap">
+        <p id="progressText" class="progress-text">Question 1 of 5</p>
+        <div class="progress-bar-outer">
+          <div id="progressBarFill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <p id="activeQuestionText" class="q-title active-question"></p>
+      <ul id="activeOptionsList" class="quiz-options"></ul>
+
+      <button id="regenerateBtn" type="button" class="secondary-btn regenerate-btn">🔄 Generate Another Question</button>
+      <p id="regenerateError" class="error-box hidden"></p>
+
+      <div class="quiz-nav">
+        <button id="prevBtn" class="secondary-btn" type="button">← Previous</button>
+        <button id="skipBtn" class="secondary-btn" type="button">Skip</button>
+        <button id="nextBtn" class="secondary-btn" type="button">Next →</button>
+        <button id="submitQuizBtn" type="button">Submit Quiz</button>
+      </div>
+    </section>
+
+    <!-- ===== Results Summary Section ===== -->
+    <section id="results" class="results hidden">
       <div class="card">
-        <h2>🧠 Quiz</h2>
-        <div id="quizContainer"></div>
+        <h2>🏁 Quiz Complete</h2>
+        <p id="resultsSummaryText"></p>
+        <button id="restartBtn" class="secondary-btn">Try Another Topic</button>
       </div>
 
       <div class="card">
-        <h2>✅ Answers</h2>
-        <button id="revealBtn" class="secondary-btn">Reveal Answers</button>
-        <ul id="answersList" class="hidden"></ul>
+        <h2>📋 Review Your Answers</h2>
+        <div id="reviewList"></div>
       </div>
 
+      <div class="card" id="analysisCard">
+        <h2>🎯 Weak-Topic Analysis</h2>
+        <div id="analysisLoader" class="loader">
+          <div class="spinner"></div>
+          <span>Analyzing your performance...</span>
+        </div>
+        <div id="analysisContent" class="hidden">
+          <p class="input-label">Weak Areas</p>
+          <ul id="weakAreasList"></ul>
+          <p class="input-label" style="margin-top: 14px;">Study Recommendation</p>
+          <p id="recommendationText"></p>
+        </div>
+        <p id="analysisError" class="error-box hidden"></p>
+      </div>
     </section>
   </div>
 
