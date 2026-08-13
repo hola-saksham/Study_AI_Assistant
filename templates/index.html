@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Study Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="app">
+    <!-- ===== Header ===== -->
+    <header class="header">
+      <h1>🎓 AI Study Assistant</h1>
+      <p class="subtitle">Type any topic or question — get an explanation, key points, and a quiz instantly.</p>
+    </header>
+
+    <!-- ===== Input Section ===== -->
+    <section class="input-card">
+      <label for="topicInput" class="input-label">Enter a topic or question</label>
+      <textarea
+        id="topicInput"
+        placeholder="e.g. Photosynthesis, Newton's Laws of Motion, What is a linked list?"
+        rows="3"
+      ></textarea>
+
+      <button id="generateBtn">Generate Study Material</button>
+
+      <!-- Error message box (hidden by default) -->
+      <p id="errorBox" class="error-box hidden"></p>
+
+      <!-- Loading indicator (hidden by default) -->
+      <div id="loader" class="loader hidden">
+        <div class="spinner"></div>
+        <span>Generating study material...</span>
+      </div>
+    </section>
+
+    <!-- ===== Results Section ===== -->
+    <section id="results" class="results hidden">
+
+      <div class="card">
+        <h2>📚 Explanation</h2>
+        <p id="explanationText"></p>
+      </div>
+
+      <div class="card">
+        <h2>📝 Key Points</h2>
+        <ul id="keyPointsList"></ul>
+      </div>
+
+      <div class="card">
+        <h2>🧠 Quiz</h2>
+        <div id="quizContainer"></div>
+      </div>
+
+      <div class="card">
+        <h2>✅ Answers</h2>
+        <button id="revealBtn" class="secondary-btn">Reveal Answers</button>
+        <ul id="answersList" class="hidden"></ul>
+      </div>
+
+    </section>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

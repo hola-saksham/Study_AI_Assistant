@@ -1,0 +1,22 @@
+# Environment variables (NEVER commit your API key)
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Flask
+instance/
+*.log
