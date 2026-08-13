@@ -10,6 +10,7 @@ OUTPUT  -> structured JSON: explanation, key_points, and a quiz array where
 import os
 import json
 import re
+import webbrowser
 
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
@@ -342,4 +343,9 @@ def analyze():
 # 7. RUN THE APP
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    import webbrowser
+    from threading import Timer
+
+    Timer(1, lambda: webbrowser.open("http://127.0.0.1:5000")).start()
+
+    app.run(debug=True, port=5000, use_reloader=False)
